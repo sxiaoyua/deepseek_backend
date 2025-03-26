@@ -4,7 +4,7 @@ const config = require('../config');
 class EmailService {
   constructor() {
     this.transporter = nodemailer.createTransport({
-      service: 'QQ',
+      service: config.EMAIL.service,
       auth: {
         user: config.EMAIL.user,
         pass: config.EMAIL.pass // 授权码，不是QQ密码

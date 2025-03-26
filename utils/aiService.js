@@ -1,19 +1,16 @@
 const OpenAI = require('openai');
-const dotenv = require('dotenv');
-
-// 配置环境变量
-dotenv.config();
+const config = require('../config');
 
 class AIService {
   constructor() {
     this.openai = new OpenAI({
-      baseURL: process.env.AI_BASE_URL || "https://openrouter.ai/api/v1",
-      apiKey: process.env.AI_API_KEY || "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",
+      baseURL: config.AI_API.baseURL,
+      apiKey: config.AI_API.key,
       defaultHeaders: {
         "X-Title": "DeepSeek AI Chat", // 在OpenRouter网站上显示的标题
       },
     });
-    this.model = process.env.AI_MODEL || "deepseek/deepseek-r1";
+    this.model = config.AI_API.model;
   }
 
   /**
