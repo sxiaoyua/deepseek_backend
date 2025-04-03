@@ -30,6 +30,12 @@ exports.sendVerificationCode = async (req, res) => {
     if (!emailRegex.test(email)) {
       return res.status(400).json({ message: '请提供有效的邮箱地址' });
     }
+    
+    // 验证验证码类型
+    const allowedTypes = ['register', 'password_reset', 'email_change', 'login'];
+    if (!type || !allowedTypes.includes(type)) {
+      return res.status(400).json({ message: '无效的验证码类型' });
+    }
 
     // 检查是否已注册（仅注册流程需要）
     if (type === 'register') {
@@ -231,7 +237,7 @@ exports.forgotPassword = async (req, res) => {
     if (!email || !code) {
       return res.status(400).json({ message: '请提供邮箱和验证码' });
     }
-
+    
     // 验证验证码
     const verification = await VerificationCode.findOne({
       email,
@@ -239,7 +245,7 @@ exports.forgotPassword = async (req, res) => {
       type: 'password_reset',
       expiresAt: { $gt: new Date() }
     });
-
+    console.log(verification);
     if (!verification) {
       return res.status(400).json({ message: '验证码无效或已过期' });
     }

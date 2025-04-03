@@ -74,15 +74,20 @@ exports.updateConversation = async (req, res) => {
     const { title } = req.body;
     const userId = req.user.id;
 
-    // 验证标题
-    if (!title || typeof title !== 'string' || title.trim() === '') {
+    // 验证标题（允许空字符串作为默认值）
+    if (title === undefined) {
       return res.status(400).json({ message: '标题不能为空' });
     }
+
+    // 使用提供的标题或默认值
+    const finalTitle = (typeof title === 'string' && title.trim() !== '') 
+      ? title 
+      : '新对话';
 
     // 查找并更新对话
     const conversation = await Conversation.findOneAndUpdate(
       { _id: id, userId },
-      { title },
+      { title: finalTitle },
       { new: true }
     );
 

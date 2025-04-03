@@ -19,8 +19,21 @@ const conversationSchema = new mongoose.Schema({
       required: true
     },
     content: {
-      type: String,
-      required: true
+      type: mongoose.Schema.Types.Mixed, // 允许字符串、数组或对象
+      required: true,
+      validate: {
+        validator: function(v) {
+          // 允许非空字符串、非空数组或包含必要字段的对象
+          return (typeof v === 'string' && v.trim() !== '') || 
+                 (Array.isArray(v) && v.length > 0) || 
+                 (v && typeof v === 'object');
+        },
+        message: props => '消息内容不能为空'
+      }
+    },
+    hasImage: {
+      type: Boolean,
+      default: false
     },
     timestamp: {
       type: Date,

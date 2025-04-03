@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const config = require('../config');
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -48,6 +49,10 @@ const userSchema = new mongoose.Schema({
     notifications: {
       type: Boolean,
       default: true
+    },
+    aiModel: {
+      type: String,
+      default: config.AI_API.model || 'deepseek/deepseek-chat-v3-0324:free'
     }
   },
   createdAt: {
