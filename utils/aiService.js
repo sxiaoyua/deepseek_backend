@@ -107,11 +107,18 @@ const sendMessage = async (userId, messages) => {
       };
     }
 
-    const completion = await openaiClient.chat.completions.create({
+    // 创建请求参数对象
+    const requestParams = {
       model: currentModel,
-      messages: messages,
-      max_tokens: 2382, // 限制最大输出token数为2000，避免免费账户配额不足
-    });
+      messages: messages
+    };
+    
+    // 只有当模型是r1时才限制token
+    if (currentModel === 'deepseek/deepseek-r1') {
+      requestParams.max_tokens = 2382; // 限制最大输出token数
+    }
+
+    const completion = await openaiClient.chat.completions.create(requestParams);
 
     // 检查响应格式
     if (!completion || !completion.choices || !Array.isArray(completion.choices) || completion.choices.length === 0) {
