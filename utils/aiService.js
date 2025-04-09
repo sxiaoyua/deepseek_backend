@@ -11,7 +11,7 @@ const MODEL_CAPABILITIES = {
   // 支持图像理解的模型
   'google/gemini-2.0-flash-thinking-exp:free': { supportsImages: true },
   'google/gemini-2.5-pro-exp-03-25:free': { supportsImages: true },
-  'google/gemini-2.0-pro-exp-02-05:free': { supportsImages: true },
+  // 'google/gemini-2.0-pro-exp-02-05:free': { supportsImages: true },
   'qwen/qwen2.5-vl-72b-instruct:free': { supportsImages: true }
 };
 
