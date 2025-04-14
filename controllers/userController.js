@@ -1,7 +1,6 @@
 const User = require('../models/User');
 const VerificationCode = require('../models/VerificationCode');
 const crypto = require('crypto');
-const emailService = require('../utils/emailService');
 
 // 获取用户资料
 exports.getProfile = async (req, res) => {

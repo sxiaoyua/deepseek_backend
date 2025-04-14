@@ -245,7 +245,6 @@ exports.forgotPassword = async (req, res) => {
       type: 'password_reset',
       expiresAt: { $gt: new Date() }
     });
-    console.log(verification);
     if (!verification) {
       return res.status(400).json({ message: '验证码无效或已过期' });
     }
