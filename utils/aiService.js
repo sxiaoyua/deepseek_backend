@@ -2,18 +2,26 @@ const OpenAI = require('openai');
 const config = require('../config');
 const User = require('../models/User');
 
-// 模型能力映射表
-const MODEL_CAPABILITIES = {
-  // DeepSeek模型 - 仅支持文本
-  'deepseek/deepseek-r1': { supportsImages: false },
-  'deepseek/deepseek-chat-v3-0324:free': { supportsImages: false },
-  
-  // 支持图像理解的模型
-  'google/gemini-2.0-flash-thinking-exp:free': { supportsImages: true },
-  'google/gemini-2.5-pro-exp-03-25:free': { supportsImages: true },
-  // 'google/gemini-2.0-pro-exp-02-05:free': { supportsImages: true },
-  'qwen/qwen2.5-vl-72b-instruct:free': { supportsImages: true }
-};
+// 从config中读取模型配置，构建模型能力映射表
+const MODEL_CAPABILITIES = {};
+
+// 添加文本模型（不支持图像）
+config.AI_API.models.textModels.forEach(model => {
+  MODEL_CAPABILITIES[model.id] = { 
+    supportsImages: false,
+    name: model.name,
+    description: model.description
+  };
+});
+
+// 添加多模态模型（支持图像）
+config.AI_API.models.multimodalModels.forEach(model => {
+  MODEL_CAPABILITIES[model.id] = { 
+    supportsImages: true,
+    name: model.name,
+    description: model.description
+  };
+});
 
 // 创建OpenAI客户端实例
 const openaiClient = new OpenAI({
@@ -221,12 +229,6 @@ const sendMessageStream = async (userId, messages, onReasoningChunk, onContentCh
       stream: true // 启用流式响应
     };
     
-    // 只有当模型是r1时才限制token
-    if (currentModel === 'deepseek/deepseek-r1') {
-      requestParams.max_tokens = 2382; // 限制最大输出token数
-    }
-
-    // console.log('发送流式请求参数:', JSON.stringify(requestParams, null, 2));
     
     const stream = await openaiClient.chat.completions.create(requestParams);
     console.log('流式连接已建立');
@@ -326,7 +328,7 @@ const sendMessageStream = async (userId, messages, onReasoningChunk, onContentCh
         success: true,
         message: {
           role: 'assistant',
-          content: finalContent || reasoningContent || "抱歉，AI无法生成有效回复",
+          content: finalContent || "抱歉，AI无法生成有效回复", // 不再使用reasoning作为fallback
           hasReasoning: !!reasoningContent,
           reasoning: reasoningContent || ""
         }
@@ -335,7 +337,12 @@ const sendMessageStream = async (userId, messages, onReasoningChunk, onContentCh
   } catch (error) {
     console.error('流式AI服务错误:', error);
     if (onError) {
+      // 将完整错误信息传递给前端
       onError(error.message || 'AI服务请求失败');
+      
+      // 重置流式状态
+      this.streamingMessage = null;
+      this.isStreaming = false;
     }
   }
 };

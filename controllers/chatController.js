@@ -2,25 +2,43 @@ const Conversation = require('../models/Conversation');
 const aiService = require('../utils/aiService');
 const config = require('../config');
 
-// 获取可用的AI模型列表
+/**
+ * 获取可用的AI模型列表
+ * @param {Object} req - 请求对象
+ * @param {Object} res - 响应对象
+ */
 exports.getModels = async (req, res) => {
   try {
     const userId = req.user.id;
+    
+    // 获取当前用户使用的模型
     const currentModel = await aiService.getUserModel(userId);
     
-    const models = {
-      current: currentModel,
-      available: config.AI_API.models,
-      capabilities: aiService.getAvailableModels()
-    };
-
-    res.status(200).json({
+    // 获取所有可用模型及其能力
+    const capabilities = aiService.getAvailableModels();
+    
+    // 从config中获取模型详细信息
+    const textModels = config.AI_API.models.textModels;
+    const multimodalModels = config.AI_API.models.multimodalModels;
+    
+    // 返回结果
+    return res.status(200).json({
       success: true,
-      data: models
+      data: {
+        current: currentModel,
+        available: {
+          textModels,
+          multimodalModels
+        },
+        capabilities
+      }
     });
   } catch (error) {
-    console.error('获取模型列表出错:', error);
-    res.status(500).json({ message: '服务器错误', error: error.message });
+    console.error('获取模型列表失败:', error);
+    return res.status(500).json({
+      success: false,
+      message: '获取模型列表失败'
+    });
   }
 };
 
