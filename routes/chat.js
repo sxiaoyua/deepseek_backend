@@ -15,6 +15,9 @@ router.post('/models/set', chatController.setModel);
 // 发送消息到AI（可以包含图像）
 router.post('/send', chatController.sendMessage);
 
+// 流式发送消息到AI（实时推送思考过程）
+router.post('/send-stream', chatController.sendMessageStream);
+
 // 单独的图像分析请求（不保存对话）
 router.post('/analyze-image', chatController.analyzeImage);
 

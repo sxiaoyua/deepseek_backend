@@ -35,6 +35,15 @@ const conversationSchema = new mongoose.Schema({
       type: Boolean,
       default: false
     },
+    // 添加以下字段以支持存储思考过程
+    hasReasoning: {
+      type: Boolean,
+      default: false
+    },
+    reasoning: {
+      type: String,
+      required: false
+    },
     timestamp: {
       type: Date,
       default: Date.now
